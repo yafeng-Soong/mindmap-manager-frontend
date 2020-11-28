@@ -11,13 +11,48 @@ const routes = [
     component: Home
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    redirect: '/myMindmap',
+    children: [
+      {
+        path: '/myMindmap',
+        name: 'MyMindmap',
+        component: () => import('../views/mindmap/MyMindmap.vue')
+      },
+      {
+        path: '/mindmapInfo',
+        name: 'MindmapInfo',
+        component: () => import('../views/mindmap/MindmapInfo.vue')
+      },
+      {
+        path: '/helloWorld',
+        name: 'HelloWorld',
+        component: () => import('../components/HelloWorld.vue')
+      },
+      {
+        path: '/submit',
+        name: 'Submit',
+        component: () => import('../views/paper/Submit.vue')
+      },
+      {
+        path: '/paperInfo',
+        name: 'PaperInfo',
+        component: () => import('../views/paper/PaperInfo.vue')
+      },
+      {
+        path: '/myPaper',
+        name: 'MyPaper',
+        component: () => import('../views/paper/MyPaper.vue')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/Login.vue')
+  },
 ]
 
 const router = new VueRouter({
