@@ -143,3 +143,8 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  ::v-deep .container {
+    padding: 0;
+  }
+</style>

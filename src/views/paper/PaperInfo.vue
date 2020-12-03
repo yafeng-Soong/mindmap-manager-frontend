@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height">
+  <div class="fill-height ma-4">
     <file-dialog 
       v-if="fileDialog"
       :dialog="fileDialog"

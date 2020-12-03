@@ -114,7 +114,7 @@ export default {
         let that = this
         this.queryForm.currentPage = this.pageInfo.currentPage
         this.queryForm.pageSize = this.pageInfo.pageSize
-        this.queryForm.tagId = this.tagInfo.id
+        this.queryForm.tagId = this.tagInfo.tagId
         paperApi.getPageListByTag(this.queryForm)
           .then(res => {
             // console.log(res.data)

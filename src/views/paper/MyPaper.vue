@@ -1,6 +1,6 @@
 <template>
-  <v-layout align-center justify-center>
-    <v-flex xs11 sm11 md11> 
+  <div class="fill-height ma-4">
+    <!-- <v-flex xs11 sm11 md11>  -->
       <v-card>
         <v-toolbar dark color="primary">
           <v-toolbar-title style="font-size: x-large">我上传的文章</v-toolbar-title>
@@ -91,8 +91,8 @@
           </v-layout>
         </v-card-actions>
       </v-card>
-    </v-flex>
-  </v-layout>
+    <!-- </v-flex> -->
+  </div>
 </template>
 
 <script>

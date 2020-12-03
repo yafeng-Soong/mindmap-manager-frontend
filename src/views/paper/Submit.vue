@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height">
+  <div class="fill-height ma-4">
     <v-card>
       <v-toolbar  dark color="primary">
         <v-toolbar-title style="font-size: x-large">上传论文</v-toolbar-title>
