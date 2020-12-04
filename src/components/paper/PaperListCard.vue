@@ -7,6 +7,7 @@
             <v-toolbar-title>{{tagInfo.name}} 相关文章</v-toolbar-title>
             <p class="ma-4">总计{{pageInfo.total}}篇</p>
             <v-spacer></v-spacer>
+            <v-btn color="warning">锁定</v-btn>
             <v-btn class="ma-4" color="success" @click="submitPaper">新增</v-btn>
             <v-btn color="primary" @click="dialog_=false">关闭</v-btn>
           </v-toolbar>

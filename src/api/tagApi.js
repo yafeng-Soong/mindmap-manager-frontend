@@ -27,5 +27,11 @@ export default {
   },
   reparentTag(param) {
     return new methodPost('/tag/reparent', param)
+  },
+  recoverTag(param) {
+    return new methodGet('/tag/recover', {tagId: param})
+  },
+  getRecentOperations(param) {
+    return new methodGet('/tag/getRecentOperations', {themeId: param})
   }
 }

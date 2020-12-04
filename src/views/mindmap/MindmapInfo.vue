@@ -4,14 +4,17 @@
       <right-navigation 
         v-if="drawer"
         :drawer="drawer" 
-        @on-change-drawer="changeDrawer">
+        @on-change-drawer="changeDrawer"
+        @recover-tag="getTagList">
       </right-navigation>
       <v-toolbar dense dark color="primary">
         <v-toolbar-title style="font-size: x-large">{{themeInfo.name}}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click="drawer = !drawer">
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
+        <tip-icon
+          icon="mdi-dots-vertical"
+          tip="更多操作"
+          @click="drawer = !drawer">
+        </tip-icon>
       </v-toolbar>
       <paper-list-card 
         v-if="detailDialog"
@@ -38,13 +41,15 @@ import mindmap from '@hellowuxin/mindmap'
 import tagApi from '@/api/tagApi.js'
 import PaperListCard from '@/components/paper/PaperListCard.vue'
 import RightNavigation from '@/components/mindmap/RightNavigation.vue'
+import TipIcon from "../../components/common/TipIcon";
 // import paperApi from '@/api/paperApi.js'
 export default {
   name: 'MindmapInfo',
   components: {
     mindmap, 
     PaperListCard,
-    RightNavigation
+    RightNavigation,
+    TipIcon
   },
   data() {
     return {
