@@ -7,7 +7,13 @@ export default {
   getPageList(param) {
     return new methodPost("/theme/getPageList", param)
   },
-  addTag(param) {
+  addTheme(param) {
     return new methodPut('/theme/add', param)
+  },
+  addByXmind(param) {
+    return new methodPost('/theme/importXmindFile', param)
+  },
+  updateTheme(param) {
+    return new methodPost('/theme/update', param)
   }
 }

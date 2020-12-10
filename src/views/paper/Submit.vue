@@ -113,7 +113,7 @@
                 required
                 show-size
                 accept="application/msword, application/pdf, text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                :rules="[v => !!v || '文件必选']"
+                :rules="rules.fileRule"
                 label="点击上传论文附件">
               </v-file-input>
             </v-col>
@@ -165,6 +165,10 @@ export default {
         publishYear: [
           v => !!v || '不能为空',
           v => /^[1-9]\d{3}$/.test(v) || '发表年份格式不正确'
+        ],
+        fileRule: [
+          v => !!v || '文件必选',
+          v => v.size / 1024 / 1024 < 15 || '文件不能超过15MB'
         ]
       }
     }
@@ -200,6 +204,7 @@ export default {
   },
   methods: {
     async submit() {
+      // 设置论文的tag，可能有很多
       for (let i = 0; i < this.tagNameList.length; i++) {
         for (let j = 0; j < this.tagList.length; j++) {
           if (this.tagNameList[i] == this.tagList[j].name) {

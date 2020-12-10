@@ -11,7 +11,7 @@
             required
             show-size
             accept="application/msword, application/pdf, text/plain, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            :rules="[v => !!v || '文件必选']"
+            :rules="rules"
             label="点击上传论文附件">
         </v-file-input>
       </v-card-text>
@@ -39,7 +39,11 @@ export default {
   },
   data() {
     return {
-      file: null
+      file: null,
+      rules: [
+        v => !!v || '文件必选',
+        v => v.size / 1024 / 1024 < 15 || '文件不能超过15MB'
+      ]
     }
   },
   computed: {
@@ -53,7 +57,7 @@ export default {
       }
     },
     updateDisable() {
-      return this.file == null
+      return this.file == null || this.file.size/1024/1024 > 15
     }
   },
   methods: {

@@ -3,6 +3,8 @@
     <mindmap-add-dialog 
       v-if="addDialog"
       :dialog="addDialog"
+      :isAdd="isAdd"
+      :themeInfo="themeInfo"
       @on-change-dialog="changeAddDialog">
     </mindmap-add-dialog>
     <v-card flat tile>
@@ -24,28 +26,11 @@
       <v-container fluid class="grey lighten-4">
         <v-row>
           <v-col cols="12" sm="6" md="4" v-for="item in themeList" :key="item.id">
-            <v-card class="ma-1">
-              <v-card-text>
-                <div>于 {{item.createTime}} 创建</div>
-                <p class="display-1 text--primary">
-                  {{item.name}}
-                </p>
-                <p>创建者 {{item.creator}}</p>
-                <p>最后更新于 {{item.updateTime}}</p>
-                <div class="text--primary">
-                  {{item.description}}
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn
-                  text
-                  color="orange"
-                  @click="detail(item)"
-                >
-                  查看详情
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+            <mindmap-card 
+              :themeInfo="item" 
+              @detail-click="detail"
+              @edit-click="edit">
+            </mindmap-card>
           </v-col>
         </v-row>
       </v-container>
@@ -63,12 +48,14 @@
 <script>
 import Pagination from '@/components/common/Pagination.vue'
 import MindmapAddDialog from '@/components/mindmap/MindmapAddDialog.vue'
+import MindmapCard from '@/components/mindmap/MindmapCard.vue'
 import themeApi from '@/api/themeApi.js'
 export default {
   name: 'MyMindmap',
   components: {
     Pagination,
-    MindmapAddDialog
+    MindmapAddDialog,
+    MindmapCard,
   },
   data(){
     return {
@@ -85,6 +72,8 @@ export default {
         total: 0,
         pages: 1
       },
+      themeInfo: null,
+      isAdd: true,
       queryForm: {},
       themeList: []
     }
@@ -143,8 +132,14 @@ export default {
       this.$router.push('/mindmapInfo')
       // this.$router.push('/helloWorld')
     },
+    edit(param) {
+      this.themeInfo = param
+      this.addDialog = true
+      this.isAdd = false
+    },
     changeAddDialog(val) {
       this.addDialog = val
+      this.isAdd = true
       this.getPageList()
     },
     changePage(val){
