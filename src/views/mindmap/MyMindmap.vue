@@ -27,9 +27,9 @@
         <v-row>
           <v-col cols="12" sm="6" md="4" v-for="item in themeList" :key="item.id">
             <mindmap-card 
-              :themeInfo="item" 
-              @detail-click="detail"
-              @edit-click="edit">
+              :themeInfo="item"
+              @changed="getPageList"
+              @removed="themeFlash">
             </mindmap-card>
           </v-col>
         </v-row>
@@ -42,6 +42,30 @@
         </v-layout>
       </v-card-actions>
     </v-card>
+    <div class="ma-8"></div>
+    <v-card flat tile>
+      <v-toolbar  dark color="red lighten-2">
+        <v-toolbar-title style="font-size: x-large">回收站</v-toolbar-title>
+        <div class="ma-4">总计{{removedPageInfo.total}}个</div>
+      </v-toolbar>
+      <v-container fluid class="grey lighten-4">
+        <v-row>
+          <v-col cols="12" sm="6" md="4" v-for="item in removedList" :key="item.id">
+            <removed-card
+              :themeInfo="item"
+              @recovered="themeFlash">
+            </removed-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-card-actions class="grey lighten-4">
+        <v-layout justify-center>
+          <pagination theme="red lighten-2"
+          :currentPage="removedPageInfo.currentPage"
+          :total="removedPageInfo.pages" @on-change-page="changeRemovedPage"></pagination>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 
@@ -50,12 +74,14 @@ import Pagination from '@/components/common/Pagination.vue'
 import MindmapAddDialog from '@/components/mindmap/MindmapAddDialog.vue'
 import MindmapCard from '@/components/mindmap/MindmapCard.vue'
 import themeApi from '@/api/themeApi.js'
+import RemovedCard from '../../components/mindmap/RemovedCard.vue'
 export default {
   name: 'MyMindmap',
   components: {
     Pagination,
     MindmapAddDialog,
     MindmapCard,
+    RemovedCard,
   },
   data(){
     return {
@@ -72,14 +98,22 @@ export default {
         total: 0,
         pages: 1
       },
+      removedPageInfo: {
+        currentPage: 1,
+        pageSize: 3,
+        total: 0,
+        pages: 1
+      },
       themeInfo: null,
       isAdd: true,
       queryForm: {},
-      themeList: []
+      themeList: [],
+      removedList: []
     }
   },
   created() {
     this.getPageList()
+    this.getRemovedPageList()
   },
   computed: {
   },
@@ -122,29 +156,49 @@ export default {
           console.log('网络错误！'+err);
         })
     },
+    getRemovedPageList() {
+      let that = this
+      this.removedList = []
+      let param = {
+        currentPage: this.removedPageInfo.currentPage,
+        pageSize: this.removedPageInfo.pageSize,
+        removed: true
+      }
+      themeApi.getPageList(param)
+        .then(res => {
+          if (res.code === 200) {
+            that.removedList = res.data.data;
+            that.removedPageInfo.pages = res.data.pages
+            that.removedPageInfo.total = res.data.total
+          } else {
+            this.$toast.error(res.msg)
+            console.log('获取回收站列表失败'+res.msg);
+          }
+        })
+        .catch(err => {
+          this.$toast.error('网络异常')
+          console.log('网络错误！'+err);
+        })
+    },
     search() {
       this.pageInfo = Object.assign({}, this.defaultPageInfo)
       this.getPageList()
     },
-    detail(param) {
-      this.$store.commit('setThemeInfo', param)
-      // console.log(this.$store.getters.getThemeInfo)
-      this.$router.push('/mindmapInfo')
-      // this.$router.push('/helloWorld')
-    },
-    edit(param) {
-      this.themeInfo = param
-      this.addDialog = true
-      this.isAdd = false
-    },
     changeAddDialog(val) {
       this.addDialog = val
-      this.isAdd = true
       this.getPageList()
     },
-    changePage(val){
-      this.pageInfo.currentPage = val;
-      this.getPageList();
+    changePage(val) {
+      this.pageInfo.currentPage = val
+      this.getPageList()
+    },
+    changeRemovedPage(val) {
+      this.removedPageInfo.currentPage = val
+      this.getRemovedPageList()
+    },
+    themeFlash() {
+      this.getPageList()
+      this.getRemovedPageList()
     },
   }
 }

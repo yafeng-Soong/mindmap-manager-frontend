@@ -1,4 +1,4 @@
-import {methodGet, methodPost, methodPut} from "./index";
+import {methodGet, methodPost, methodPut, methodDelete} from "./index";
 
 export default {
   getList(){
@@ -15,5 +15,11 @@ export default {
   },
   updateTheme(param) {
     return new methodPost('/theme/update', param)
+  },
+  removeTheme(param) {
+    return new methodDelete('/theme/remove', {themeId: param})
+  },
+  recoverTheme(param) {
+    return new methodGet('/theme/recover', {themeId: param})
   }
 }
