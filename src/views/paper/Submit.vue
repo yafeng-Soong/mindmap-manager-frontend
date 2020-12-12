@@ -22,11 +22,12 @@
               <v-row>
                 <v-col cols="4">
                   <v-autocomplete
-                    v-model="themeName"
+                    v-model="themeId"
                     :rules="rules.notEmpty"
                     :disabled="themeDisable"
                     :items="themeList"
                     item-text="name"
+                    item-value="id"
                     outlined
                     required
                     dense
@@ -39,11 +40,12 @@
                 </v-col>
                 <v-col cols="8">
                   <v-autocomplete
-                    v-model="tagNameList"
+                    v-model="paperInfo.tags"
                     :rules="rules.listRule"
                     :disabled="themeDisable"
                     :items="tagList"
                     item-text="name"
+                    item-value="tagId"
                     outlined
                     required
                     dense
@@ -71,7 +73,6 @@
                 v-model="paperInfo.author"
                 outlined
                 required
-                :rules="rules.notEmpty"
                 prepend-icon="mdi-account-edit"
                 label="作者">
               </v-text-field>
@@ -81,7 +82,6 @@
                 v-model="paperInfo.keyword"
                 outlined
                 required
-                :rules="rules.notEmpty"
                 prepend-icon="mdi-file-word-box-outline"
                 label="关键字">
               </v-text-field>
@@ -91,7 +91,6 @@
                 v-model="paperInfo.abstracts"
                 outlined
                 required
-                :rules="rules.notEmpty"
                 prepend-icon="mdi-file-document"
                 label="文章摘要">
               </v-textarea>
@@ -101,7 +100,6 @@
                 v-model="paperInfo.summary"
                 outlined
                 required
-                :rules="rules.notEmpty"
                 prepend-icon="mdi-fountain-pen"
                 label="你对文章的概括">
               </v-textarea>
@@ -141,8 +139,7 @@ export default {
       valid: true,
       themeDisable: false,
       fromNavigation: true, // 是否是从侧边栏跳转过来的
-      themeName: '',
-      tagNameList: [],
+      themeId: null,
       themeList: [],
       tagList: [],
       paperInfo: {
@@ -181,8 +178,8 @@ export default {
       this.fromNavigation = false
       this.themeList.push(themeInfo)
       this.tagList.push(tagInfo)
-      this.tagNameList.push(tagInfo.name)
-      this.themeName = themeInfo.name
+      this.paperInfo.tags.push(tagInfo.tagId)
+      // this.themeName = themeInfo.name
       this.themeDisable = true
     } else {
       let that = this
@@ -204,20 +201,10 @@ export default {
   },
   methods: {
     async submit() {
-      // 设置论文的tag，可能有很多
-      for (let i = 0; i < this.tagNameList.length; i++) {
-        for (let j = 0; j < this.tagList.length; j++) {
-          if (this.tagNameList[i] == this.tagList[j].name) {
-            this.paperInfo.tags.push(this.tagList[j].id)
-            break;
-          }
-        }
-      }
+      console.log(this.paperInfo.tags)
       if (this.$refs.form.validate()) {
         try {
           let res = await paperApi.submit(this.paperInfo)
-          console.log("上传论文成功返回值")
-          console.log(res)
           if (res.code === 200)
             this.uploadFile(res.data)
           else {
@@ -251,21 +238,22 @@ export default {
         })
     },
     async themeChange() {
-      for (let i = 0; i < this.themeList.length; i++) 
-        if (this.themeName == this.themeList[i].name) {
-          try {
-            let res = await tagApi.getSimpleList(this.themeList[i].id)
-            if (res.code === 200)
-              this.tagList = res.data
-            else{
-              console.log('获取tag列表出错')
-              console.log(res)
-            }
-          } catch (err) {
-            console.log('获取tag列表出错')
-            console.log(err)
-          }
+      if (this.themeId == null) {
+        this.tagList = []
+        return
+      }
+      try {
+        let res = await tagApi.getSimpleList(this.themeId)
+        if (res.code === 200)
+          this.tagList = res.data
+        else{
+          console.log('获取tag列表出错')
+          console.log(res)
         }
+      } catch (err) {
+        console.log('获取tag列表出错')
+        console.log(err)
+      }
     }
   }
 }

@@ -1,5 +1,17 @@
 <template>
   <div class="fill-height ma-1">
+    <paper-list-card 
+      v-if="detailDialog"
+      :dialog="detailDialog" 
+      :tagInfo="tagInfo"
+      @on-change-dialog="changeDialog">
+    </paper-list-card>
+    <combine-dialog 
+      v-if="combineDialog"
+      :dialog="combineDialog"
+      :themeInfo="themeInfo"
+      @on-change-dialog="changeCombineDialog">
+    </combine-dialog>
     <v-card class="fill-height" width="100%" flat tile>
       <right-navigation 
         v-if="drawer"
@@ -11,17 +23,16 @@
         <v-toolbar-title style="font-size: x-large">{{themeInfo.name}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <tip-icon
+          icon="mdi-vector-combine"
+          tip="合并到..."
+          @click="combineDialog=true">
+        </tip-icon>
+        <tip-icon
           icon="mdi-dots-vertical"
           tip="更多操作"
           @click="drawer = !drawer">
         </tip-icon>
       </v-toolbar>
-      <paper-list-card 
-        v-if="detailDialog"
-        :dialog="detailDialog" 
-        :tagInfo="tagInfo"
-        @on-change-dialog="changeDialog">
-      </paper-list-card>
       <mindmap v-model="tagList" class="mindmap"
       :showUndo="false"
       @click="nodeClick(arguments)"
@@ -41,7 +52,8 @@ import mindmap from '@hellowuxin/mindmap'
 import tagApi from '@/api/tagApi.js'
 import PaperListCard from '@/components/paper/PaperListCard.vue'
 import RightNavigation from '@/components/mindmap/RightNavigation.vue'
-import TipIcon from "../../components/common/TipIcon";
+import TipIcon from "../../components/common/TipIcon.vue"
+import CombineDialog from '../../components/mindmap/CombineDialog.vue'
 // import paperApi from '@/api/paperApi.js'
 export default {
   name: 'MindmapInfo',
@@ -49,12 +61,14 @@ export default {
     mindmap, 
     PaperListCard,
     RightNavigation,
-    TipIcon
+    TipIcon,
+    CombineDialog,
   },
   data() {
     return {
       themeInfo: this.$store.getters.getThemeInfo,
       detailDialog: false,
+      combineDialog: false,
       drawer: false,
       tagList: [],
       originList: [],
@@ -239,6 +253,9 @@ export default {
     },
     changeDialog(val) {
       this.detailDialog = val
+    },
+    changeCombineDialog(val) {
+      this.combineDialog = val
     },
     changeDrawer(val) {
       this.drawer = val

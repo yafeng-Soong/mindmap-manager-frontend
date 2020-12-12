@@ -4,6 +4,9 @@ export default {
   getList(){
     return new methodGet("/theme/getList")
   },
+  getOtherList(param) {
+    return new methodGet('/theme/getList', {selfId: param})
+  },
   getPageList(param) {
     return new methodPost("/theme/getPageList", param)
   },
@@ -21,5 +24,8 @@ export default {
   },
   recoverTheme(param) {
     return new methodGet('/theme/recover', {themeId: param})
+  },
+  combineToTheme(param) {
+    return new methodPost('/theme/combine', param)
   }
 }

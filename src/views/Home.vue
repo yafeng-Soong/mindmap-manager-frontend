@@ -59,12 +59,12 @@ export default {
         </v-layout>
       </v-container>
     <!-- </v-content> -->
-    <v-footer
+    <!-- <v-footer
       color="primary"
       app
     >
       <span class="white--text">&copy; 2020</span>
-    </v-footer>
+    </v-footer> -->
   </div>
 </template>
 
