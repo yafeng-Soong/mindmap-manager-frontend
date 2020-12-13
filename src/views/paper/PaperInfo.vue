@@ -64,6 +64,7 @@ export default {
   data() {
     return {
       paperInfo: this.$store.getters.getPaperInfo,
+      tagInfo: this.$store.getters.getTagInfo,
       fileDialog: false
     }
   },
@@ -75,6 +76,9 @@ export default {
       return this.$store.getters.getPaperInfo.filePath
     }
   },
+  destroyed() {
+    this.$store.commit('deleteTagInfo')
+  },
   methods: {
     go() {
       const src = this.baseUrl + this.filePath
@@ -84,23 +88,44 @@ export default {
       this.paperInfo = this.$store.getters.getPaperInfo
       this.fileDialog = val
     },
-    deletePaper() {
+    async deletePaper() {
       console.log(this.paperInfo.id)
-      let that = this
-      paperApi.deletePaper(that.paperInfo.id)
-        .then(res => {
-          if (res.code === 200) {
-            this.$toast.success('删除成功')
-            this.$router.go(-1)
-          } else {
-            console.log('删除论文失败')
-            this.$toast.error(res.msg)
+      if (this.tagInfo == null)
+        console.log('直接删除')
+      try {
+        let res
+        if (this.tagInfo == null)
+          res = await paperApi.deletePaper(this.paperInfo.id)
+        else {
+          let param = {
+            paperId: this.paperInfo.id,
+            tagId: this.tagInfo.tagId
           }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$toast.error('删除失败，网络异常')
-        })
+          res = await paperApi.deletePaperFromTag(param)
+        }
+        if (res.code === 200) {
+          this.$toast.success('删除成功')
+          this.$router.go(-1)
+        } else this.$toast.error(res.msg)
+      } catch (err) {
+        console.log(err)
+        this.$toast.error('删除失败，网络异常')
+      }
+      // let that = this
+      // paperApi.deletePaper(that.paperInfo.id)
+      //   .then(res => {
+      //     if (res.code === 200) {
+      //       this.$toast.success('删除成功')
+      //       this.$router.go(-1)
+      //     } else {
+      //       console.log('删除论文失败')
+      //       this.$toast.error(res.msg)
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //     this.$toast.error('删除失败，网络异常')
+      //   })
     }
   }
 }

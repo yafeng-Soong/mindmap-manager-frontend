@@ -140,6 +140,7 @@ export default {
       },
       paperDetail(val) {
         this.$store.commit('setPaperInfo', val)
+        this.$store.commit('setTagInfo', this.tagInfo)
         this.$router.push('/paperInfo')
       },
       changePage(val){

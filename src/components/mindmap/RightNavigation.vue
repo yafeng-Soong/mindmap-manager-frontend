@@ -1,126 +1,153 @@
 <template>
-  <v-navigation-drawer
-    v-model="drawer_"
-    absolute
-    temporary
-    right
-    width="350px">
-    <v-tabs 
-      v-model="tab"
-      centered 
-      slider-size="1"
-      icons-and-text>
-      <v-tab>
-        成员
-        <v-icon>mdi-account-group</v-icon>
-      </v-tab>
-      <v-tab>
-        操作记录
-        <v-icon>mdi-history</v-icon>
-      </v-tab>
-      <v-tab>
-        回收站
-        <v-icon>mdi-delete-clock</v-icon>
-      </v-tab>
-    </v-tabs>
-    <v-divider></v-divider>
-    <v-tabs-items v-model="tab">
-      <v-tab-item>
-        <v-list three-line>
-            <v-list-item>
-              <v-list-item-avatar>
-                    <v-img :src="creator.avatar"></v-img>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                    <v-list-item-title>{{userInfo.username}}    (创建者)</v-list-item-title>
-                    <v-list-item-subtitle>{{userInfo.email}}</v-list-item-subtitle>
-                </v-list-item-content>  
-            </v-list-item>
-            <v-divider></v-divider>
-            <v-list-item v-for="(item, index) in items"
-                :key="index"
-                >
-                <v-list-item-avatar color="primary" size="30">
-                    <!-- <v-img :src="item.avatar"></v-img> -->
-                    <span class="white--text headline">{{item.title[0]}}</span>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                    <v-list-item-title v-html="item.title"></v-list-item-title>
-                    <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-            <v-divider></v-divider>
-        </v-list>
-        <v-layout justify-center align-center>
-          <v-btn text color="warning">邀请成员</v-btn>
-        </v-layout>
-      </v-tab-item>
-      <v-tab-item>
-        <v-list three-line>
-          <v-list-item v-for="(item, index) in operations" 
-          :key="index">
-            <v-list-item-avatar color="primary">
-              <span class="white--text headline">{{item.operatorName[0]}}</span>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{item.operatorName + ' ' + item.operation}}
-                <span class="text--secondary text-body-2">{{item.tagName}}</span>
-              </v-list-item-title>
-              <v-list-item-subtitle>{{item.createTime}}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-        <v-col v-if="operations.length > 0">
-          <v-divider></v-divider>
+  <div>
+    <v-dialog
+      v-model="dialog"
+      width="500">
+      <v-card>
+        <v-toolbar dark color="red lighten-2">
+          <v-card-title>
+            确定要彻底删除？
+          </v-card-title>
+        </v-toolbar>
+        <v-card-text class="display-1 text--primary">
+          彻底删除后无法找回，并且与节点相关的论文数据也会被删除，请谨慎操作
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="error"
+            text
+            @click="deleteTag"
+          >删除</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-navigation-drawer
+      v-model="drawer_"
+      absolute
+      temporary
+      right
+      width="350px">
+      <v-tabs 
+        v-model="tab"
+        centered 
+        slider-size="1"
+        icons-and-text>
+        <v-tab>
+          成员
+          <v-icon>mdi-account-group</v-icon>
+        </v-tab>
+        <v-tab>
+          操作记录
+          <v-icon>mdi-history</v-icon>
+        </v-tab>
+        <v-tab>
+          回收站
+          <v-icon>mdi-delete-clock</v-icon>
+        </v-tab>
+      </v-tabs>
+      <v-divider></v-divider>
+      <v-tabs-items v-model="tab">
+        <v-tab-item>
+          <v-list three-line>
+              <v-list-item>
+                <v-list-item-avatar>
+                      <v-img :src="creator.avatar"></v-img>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                      <v-list-item-title>{{userInfo.username}}    (创建者)</v-list-item-title>
+                      <v-list-item-subtitle>{{userInfo.email}}</v-list-item-subtitle>
+                  </v-list-item-content>  
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item v-for="(item, index) in items"
+                  :key="index"
+                  >
+                  <v-list-item-avatar color="primary" size="30">
+                      <!-- <v-img :src="item.avatar"></v-img> -->
+                      <span class="white--text headline">{{item.title[0]}}</span>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                      <v-list-item-title v-html="item.title"></v-list-item-title>
+                      <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                  </v-list-item-content>
+              </v-list-item>
+              <v-divider></v-divider>
+          </v-list>
           <v-layout justify-center align-center>
-          <v-btn text color="warning">查看更多</v-btn>
+            <v-btn text color="warning">邀请成员</v-btn>
           </v-layout>
-        </v-col>
-      </v-tab-item>
-      <v-tab-item>
-        <v-list three-line>
-          <v-list-item 
-            v-for="(item, index) in removedList"
+        </v-tab-item>
+        <v-tab-item>
+          <v-list three-line>
+            <v-list-item v-for="(item, index) in operations" 
             :key="index">
-            <v-list-item-avatar color="primary">
-              <span class="white--text headline">宋</span>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{item.tagName}}
-                <span class="text--secondary text-body-2">由{{item.operatorName}}删除</span>
-              </v-list-item-title>
-              <v-list-item-subtitle>{{item.createTime}}</v-list-item-subtitle>
-            </v-list-item-content>
-            <tip-icon
-              small
-              color="success"
-              tip="还原"
-              icon="mdi-restore"
-              @click="recoverTag(item.tagId)">
-            </tip-icon>
-            <tip-icon
-              small
-              color="error"
-              tip="彻底删除"
-              icon="mdi-delete-forever">
-            </tip-icon>
-          </v-list-item>
-        </v-list>
-        <v-col v-if="removedList.length > 0">
-          <v-divider></v-divider>
-          <v-layout justify-center align-center>
-          <v-btn text color="warning">查看更多</v-btn>
-          </v-layout>
-        </v-col>
-      </v-tab-item>
-    </v-tabs-items>
-  </v-navigation-drawer>
+              <v-list-item-avatar color="primary">
+                <span class="white--text headline">{{item.operatorName[0]}}</span>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{item.operatorName + ' ' + item.operation}}
+                  <span class="text--secondary text-body-2">{{item.tagName}}</span>
+                </v-list-item-title>
+                <v-list-item-subtitle>{{item.createTime}}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <v-col v-if="operations.length > 0">
+            <v-divider></v-divider>
+            <v-layout justify-center align-center>
+            <v-btn text color="warning">查看更多</v-btn>
+            </v-layout>
+          </v-col>
+        </v-tab-item>
+        <v-tab-item>
+          <v-list three-line>
+            <v-list-item 
+              v-for="(item, index) in removedList"
+              :key="index">
+              <v-list-item-avatar color="primary">
+                <span class="white--text headline">宋</span>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{item.tagName}}
+                  <span class="text--secondary text-body-2">由{{item.operatorName}}删除</span>
+                </v-list-item-title>
+                <v-list-item-subtitle>{{item.createTime}}</v-list-item-subtitle>
+              </v-list-item-content>
+              <tip-icon
+                small
+                color="success"
+                tip="还原"
+                icon="mdi-restore"
+                @click="recoverTag(item.tagId)">
+              </tip-icon>
+              <tip-icon
+                small
+                color="error"
+                tip="彻底删除"
+                icon="mdi-delete-forever"
+                @click="deleteDialog(item.tagId)">
+              </tip-icon>
+            </v-list-item>
+          </v-list>
+          <v-col v-if="removedList.length > 0">
+            <v-divider></v-divider>
+            <v-layout justify-center align-center>
+            <v-btn text color="warning">查看更多</v-btn>
+            </v-layout>
+          </v-col>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-navigation-drawer>
+  </div>
 </template>
 
 <script>
 import tagApi from '@/api/tagApi.js'
+import themeApi from '@/api/themeApi.js'
 import TipIcon from "../common/TipIcon";
 export default {
   name: 'RightNavigation',
@@ -138,6 +165,8 @@ export default {
       themeInfo: this.$store.getters.getThemeInfo,
       userInfo: this.$store.getters.getCurrentUser,
       tab: null,
+      dialog: false,
+      deleteTagId: null,
       removedList: [],
       operations: [],
       creator: {
@@ -194,7 +223,7 @@ export default {
     },
     getRecentOperations() {
       let that = this
-      tagApi.getRecentOperations(this.themeInfo.id)
+      themeApi.getRecentOperations(this.themeInfo.id)
         .then(res => {
           if (res.code === 200)
             that.operations = res.data.slice(0,5)
@@ -203,6 +232,10 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    deleteDialog(tagId) {
+      this.deleteTagId = tagId
+      this.dialog = true
     },
     async recoverTag(tagId) {
       try {
@@ -217,6 +250,22 @@ export default {
       }
       this.drawer_ = false
       this.$emit('recover-tag')
+    },
+    async deleteTag() {
+      try {
+        let res = await tagApi.deleteTag(this.deleteTagId)
+        if (res.code === 200) {
+          this.$toast.success(res.data)
+          this.getRemoveList()
+          this.getRecentOperations()
+        }
+        else
+          this.$toast.error(res.msg)
+      } catch (err) {
+        this.$toast.error('网络异常')
+        console.log(err)
+      }
+      this.dialog = false
     }
   }
 }

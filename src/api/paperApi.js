@@ -21,5 +21,8 @@ export default {
   },
   deletePaper(param) {
     return new methodDelete('/paper/deletePaper', {paperId: param})
+  },
+  deletePaperFromTag(param) {
+    return new methodPost('/paper/deleteFromTag', param)
   }
 }

@@ -18,7 +18,7 @@
                 label="发表年份">
               </v-text-field>
             </v-col>
-            <v-container fluid>
+            <v-col cols="12">
               <v-row>
                 <v-col cols="4">
                   <v-autocomplete
@@ -57,7 +57,7 @@
                   </v-autocomplete>
                 </v-col>
               </v-row>
-            </v-container>
+            </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="paperInfo.name"
@@ -177,6 +177,7 @@ export default {
     if (tagInfo && themeInfo) {
       this.fromNavigation = false
       this.themeList.push(themeInfo)
+      this.themeId = themeInfo.id
       this.tagList.push(tagInfo)
       this.paperInfo.tags.push(tagInfo.tagId)
       // this.themeName = themeInfo.name

@@ -27,5 +27,8 @@ export default {
   },
   combineToTheme(param) {
     return new methodPost('/theme/combine', param)
+  },
+  getRecentOperations(param) {
+    return new methodGet('/theme/getRecentOperations', {themeId: param})
   }
 }

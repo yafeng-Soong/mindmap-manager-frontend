@@ -1,4 +1,4 @@
-import {methodGet,methodPost} from "./index";
+import {methodGet, methodPost, methodDelete} from "./index";
 
 export default {
   getTree(param) {
@@ -19,6 +19,9 @@ export default {
   removeTag(param) {
     return new methodPost('/tag/remove', param)
   },
+  deleteTag(param) {
+    return new methodDelete('/tag/delete', {tagId: param})
+  },
   changePosition(param) {
     return new methodPost('/tag/changePosition', param)
   },
@@ -30,8 +33,5 @@ export default {
   },
   recoverTag(param) {
     return new methodGet('/tag/recover', {tagId: param})
-  },
-  getRecentOperations(param) {
-    return new methodGet('/tag/getRecentOperations', {themeId: param})
   }
 }
