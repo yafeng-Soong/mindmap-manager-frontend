@@ -106,7 +106,7 @@
           userApi.login(that.loginInfo)
             .then(res => {
               if (res.code !== 200){
-                this.$toast.error(res.msg)
+                this.$toast.error(res.data)
             }else{
                 that.loading = true
                 this.$toast.success("登陆成功！请稍等~")

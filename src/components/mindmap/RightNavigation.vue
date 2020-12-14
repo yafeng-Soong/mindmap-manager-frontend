@@ -243,7 +243,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('还原成功')
         else
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         this.$toast.error('网络异常')
         console.log(err)
@@ -260,7 +260,7 @@ export default {
           this.getRecentOperations()
         }
         else
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         this.$toast.error('网络异常')
         console.log(err)

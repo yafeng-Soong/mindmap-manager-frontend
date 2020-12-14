@@ -115,7 +115,7 @@ export default {
             if (res.code === 200) {
               this.$toast.success('新增成功')
               this.dialog_ = false
-            } else this.$toast.error(res.msg)
+            } else this.$toast.error(res.data)
           })
           .catch(err => {
             console.log(err)
@@ -131,7 +131,7 @@ export default {
             if (res.code === 200) {
               this.$toast.success('导入xmind成功')
               this.dialog_ = false
-            } else this.$toast.error(res.msg)
+            } else this.$toast.error(res.data)
           })
           .catch(err => {
             console.log(err)
@@ -145,7 +145,7 @@ export default {
           if (res.code === 200) {
             this.$toast.success('修改成功')
             this.dialog_ = false
-          } else this.$toast.error(res.msg)
+          } else this.$toast.error(res.data)
         })
         .catch(err => {
           console.log(err)

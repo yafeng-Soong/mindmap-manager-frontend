@@ -131,7 +131,7 @@ export default {
             this.$toast.success(res.data)
             that.dialog_ = false
           }
-          else this.$toast.error(res.msg)
+          else this.$toast.error(res.data)
         })
         .catch(err => {
           console.log(err)

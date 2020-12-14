@@ -148,7 +148,7 @@ export default {
             that.pageInfo.total = res.data.total
           } else {
             console.log('获取论文列表失败！' + res.data)
-            this.$toast.error(res.msg)
+            this.$toast.error(res.data)
           }
         })
         .catch(err => {

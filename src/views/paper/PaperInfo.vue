@@ -89,9 +89,6 @@ export default {
       this.fileDialog = val
     },
     async deletePaper() {
-      console.log(this.paperInfo.id)
-      if (this.tagInfo == null)
-        console.log('直接删除')
       try {
         let res
         if (this.tagInfo == null)
@@ -106,7 +103,7 @@ export default {
         if (res.code === 200) {
           this.$toast.success('删除成功')
           this.$router.go(-1)
-        } else this.$toast.error(res.msg)
+        } else this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('删除失败，网络异常')
@@ -119,7 +116,7 @@ export default {
       //       this.$router.go(-1)
       //     } else {
       //       console.log('删除论文失败')
-      //       this.$toast.error(res.msg)
+      //       this.$toast.error(res.data)
       //     }
       //   })
       //   .catch(err => {

@@ -126,8 +126,8 @@ export default {
           if (res.code === 200)
             that.themeList = res.data;
           else {
-            this.$toast.error(res.msg)
-            console.log('获取脑图列表失败'+res.msg);
+            this.$toast.error(res.data)
+            console.log('获取脑图列表失败'+res.data);
           }
         })
         .catch(err => {
@@ -147,8 +147,8 @@ export default {
             that.pageInfo.pages = res.data.pages
             that.pageInfo.total = res.data.total
           } else {
-            this.$toast.error(res.msg)
-            console.log('获取脑图列表失败'+res.msg);
+            this.$toast.error(res.data)
+            console.log('获取脑图列表失败'+res.data);
           }
         })
         .catch(err => {
@@ -171,8 +171,8 @@ export default {
             that.removedPageInfo.pages = res.data.pages
             that.removedPageInfo.total = res.data.total
           } else {
-            this.$toast.error(res.msg)
-            console.log('获取回收站列表失败'+res.msg);
+            this.$toast.error(res.data)
+            console.log('获取回收站列表失败'+res.data);
           }
         })
         .catch(err => {

@@ -81,7 +81,7 @@ export default {
           if (res.code === 200) {
             this.$toast.success('删除成功，已归档到回收站')
             this.$emit('removed')
-          } else this.$toast.error(res.msg)
+          } else this.$toast.error(res.data)
         })
         .catch(err => {
           console.log(err)

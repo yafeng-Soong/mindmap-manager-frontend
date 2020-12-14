@@ -209,7 +209,7 @@ export default {
           if (res.code === 200)
             this.uploadFile(res.data)
           else {
-            this.$toast.error(res.msg)
+            this.$toast.error(res.data)
             console.log(res)
           }  
         } catch (err) {
@@ -227,7 +227,7 @@ export default {
           if (res.code === 200) {
             this.$toast.success('上传论文成功！')
           } else {
-            this.$toast.error(res.msg)
+            this.$toast.error(res.data)
             console.log(res)
           }
           this.$router.replace('/myPaper')

@@ -71,7 +71,7 @@ export default {
             this.$toast.success('更新成功')
             this.dialog_ = false
             this.$store.commit('setPaperInfo', res.data)
-          } else this.$toast.error(res.msg)
+          } else this.$toast.error(res.data)
         })
         .catch(err => {
           this.$toast.error('服务器异常')

@@ -80,7 +80,7 @@ export default {
           if (res.code === 200) {
             this.$toast.success('恢复成功')
             this.$emit('recovered')
-          } else this.$toast.error(res.msg)
+          } else this.$toast.error(res.data)
         })
         .catch(err => {
           console.log(err)

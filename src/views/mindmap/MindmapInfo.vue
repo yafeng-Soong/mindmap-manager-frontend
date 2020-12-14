@@ -89,7 +89,7 @@ export default {
             that.originList = res.data
           } else {
             this.$toast.err('获取数据异常')
-            console.log('获取数据异常' + res.msg)
+            console.log('获取数据异常' + res.data)
           }
         })
         .catch(err => {
@@ -149,7 +149,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('插入成功')
         else 
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
@@ -169,7 +169,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('重命名成功')
         else 
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
@@ -186,7 +186,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('删除成功')
         else 
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
@@ -206,7 +206,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('改变位置成功')
         else
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
@@ -223,7 +223,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('变换位置成功')
         else
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
@@ -244,7 +244,7 @@ export default {
         if (res.code === 200)
           this.$toast.success('改变顺序成功')
         else
-          this.$toast.error(res.msg)
+          this.$toast.error(res.data)
       } catch (err) {
         console.log(err)
         this.$toast.error('服务器异常')
