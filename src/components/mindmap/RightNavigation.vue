@@ -98,7 +98,11 @@
           <v-col v-if="operations.length > 0">
             <v-divider></v-divider>
             <v-layout justify-center align-center>
-            <v-btn text color="warning">查看更多</v-btn>
+              <!-- <v-btn text color="warning">查看更多</v-btn> -->
+              <pagination class="ma-2"
+                :currentPage="operationPage.currentPage"
+                :total="operationPage.pages" @on-change-page="changeOperationPage">
+              </pagination>
             </v-layout>
           </v-col>
         </v-tab-item>
@@ -136,7 +140,11 @@
           <v-col v-if="removedList.length > 0">
             <v-divider></v-divider>
             <v-layout justify-center align-center>
-            <v-btn text color="warning">查看更多</v-btn>
+            <!-- <v-btn text color="warning">查看更多</v-btn> -->
+              <pagination class="ma-2"
+                :currentPage="removedPage.currentPage"
+                :total="removedPage.pages" @on-change-page="changeRemovedPage">
+              </pagination>
             </v-layout>
           </v-col>
         </v-tab-item>
@@ -148,11 +156,14 @@
 <script>
 import tagApi from '@/api/tagApi.js'
 import themeApi from '@/api/themeApi.js'
-import TipIcon from "../common/TipIcon";
+import TipIcon from "../common/TipIcon"
+import Pagination from '@/components/common/Pagination.vue'
 export default {
   name: 'RightNavigation',
-  components: {TipIcon},
-  comments: {TipIcon},
+  components: {
+    TipIcon,
+    Pagination
+  },
   props: {
     drawer: {
       types: Boolean,
@@ -169,6 +180,18 @@ export default {
       deleteTagId: null,
       removedList: [],
       operations: [],
+      operationPage: {
+        currentPage: 1,
+        pageSize: 5,
+        total: 0,
+        pages: 1
+      },
+      removedPage: {
+        currentPage: 1,
+        pageSize: 5,
+        total: 0,
+        pages: 1
+      },
       creator: {
         avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
         title: '兰威',
@@ -211,11 +234,19 @@ export default {
   methods: {
     getRemoveList() {
       let that = this
-      tagApi.getRemoveList(this.themeInfo.id)
+      this.removedList = []
+      let param = {
+        currentPage: this.removedPage.currentPage,
+        pageSize: this.removedPage.pageSize,
+        themeId: this.themeInfo.id
+      }
+      themeApi.getRemoveList(param)
         .then(res => {
-          if (res.code === 200)
-            that.removedList = res.data
-          else console.log("获取被删除列表失败")
+          if (res.code === 200) {
+            that.removedList = res.data.data
+            that.removedPage.pages = res.data.pages
+            that.removedPage.total = res.data.total
+          } else console.log("获取被删除列表失败")
         })
         .catch(err => {
           console.log(err)
@@ -223,11 +254,19 @@ export default {
     },
     getRecentOperations() {
       let that = this
-      themeApi.getRecentOperations(this.themeInfo.id)
+      this.operations = []
+      let param = {
+        currentPage: this.operationPage.currentPage,
+        pageSize: this.operationPage.pageSize,
+        themeId: this.themeInfo.id
+      }
+      themeApi.getRecentOperations(param)
         .then(res => {
-          if (res.code === 200)
-            that.operations = res.data.slice(0,5)
-          else console.log("获取操作列表失败")
+          if (res.code === 200) {
+            that.operations = res.data.data
+            that.operationPage.pages = res.data.pages
+            that.operationPage.total = res.data.total
+          } else console.log("获取操作列表失败")
         })
         .catch(err => {
           console.log(err)
@@ -266,11 +305,21 @@ export default {
         console.log(err)
       }
       this.dialog = false
+    },
+    changeOperationPage(val) {
+      this.operationPage.currentPage = val
+      this.getRecentOperations()
+    },
+    changeRemovedPage(val) {
+      this.removedPage.currentPage = val
+      this.getRemoveList()
     }
   }
 }
 </script>
 
-<style>
-
+<style lang = "scss" scoped>
+  .list-content{
+    height: 90%;
+  }
 </style>

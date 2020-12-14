@@ -28,7 +28,13 @@ export default {
   combineToTheme(param) {
     return new methodPost('/theme/combine', param)
   },
+  deleteTheme(param) {
+    return new methodDelete('/theme/delete', {themeId: param})
+  },
   getRecentOperations(param) {
-    return new methodGet('/theme/getRecentOperations', {themeId: param})
-  }
+    return new methodPost('/theme/getOperations', param)
+  },
+  getRemoveList(param) {
+    return new methodPost("/theme/getRemovedTagList", param)
+  },
 }

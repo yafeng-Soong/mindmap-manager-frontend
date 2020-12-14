@@ -21,6 +21,7 @@
           style="width: 10px"
         ></v-text-field>
         <v-btn icon title="查找" @click="search"><v-icon>mdi-search-web</v-icon></v-btn>
+        <v-btn icon title="重置查询" @click="reset"><v-icon>mdi-backup-restore</v-icon></v-btn>
         <v-btn icon title="新建" @click="addDialog = true"><v-icon>mdi-plus-circle</v-icon></v-btn>
       </v-toolbar>
       <v-container fluid class="grey lighten-4">
@@ -53,7 +54,8 @@
           <v-col cols="12" sm="6" md="4" v-for="item in removedList" :key="item.id">
             <removed-card
               :themeInfo="item"
-              @recovered="themeFlash">
+              @recovered="themeFlash"
+              @deleted="themeFlash">
             </removed-card>
           </v-col>
         </v-row>
@@ -183,6 +185,11 @@ export default {
     search() {
       this.pageInfo = Object.assign({}, this.defaultPageInfo)
       this.getPageList()
+    },
+    reset() {
+      this.queryForm.name = null
+      this.pageInfo = Object.assign({}, this.defaultPageInfo)
+      this.getPageList() 
     },
     changeAddDialog(val) {
       this.addDialog = val

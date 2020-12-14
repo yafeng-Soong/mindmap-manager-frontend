@@ -21,7 +21,7 @@
           <v-btn
             color="error"
             text
-            @click="dialog = false"
+            @click="remove"
           >
             删除
           </v-btn>
@@ -49,7 +49,7 @@
         <v-btn
           text
           color="error"
-          @click="remove"
+          @click="dialog = true"
         >
           彻底删除
         </v-btn>
@@ -87,8 +87,20 @@ export default {
           this.$toast.error('网络异常')
         })
     },
-    remove() {
-      this.dialog = true
+    async remove() {
+      try {
+        let res = await themeApi.deleteTheme(this.themeInfo.id)
+        if (res.code === 200) {
+          this.$toast.success('删除成功')
+          this.$emit('deleted')
+        }
+        else 
+          this.$toast.error(res.data)
+      } catch (err) {
+        console.log(err)
+        this.$toast.error('网络异常')
+      }
+      this.dialog = false
     }
   }
 }

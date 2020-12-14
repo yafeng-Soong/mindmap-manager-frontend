@@ -7,9 +7,6 @@ export default {
   getSimpleList(param) {
     return new methodGet('/tag/getSimpleList', {themeId: param})
   },
-  getRemoveList(param) {
-    return new methodGet("/tag/getRemovedList", {themeId: param})
-  },
   addTag(param) {
     return new methodPost('/tag/add', param)
   },
