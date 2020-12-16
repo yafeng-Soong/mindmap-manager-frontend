@@ -8,7 +8,7 @@ export default {
         return new methodPost('/user/signUp', params)
     },
     resetPassword(params) {
-        return new methodGet('/user/resetPassword', {email: params})
+        return new methodPost('/user/resetPassword', params)
     },
     sayHello(){
         return new methodGet("/sayHello")
@@ -20,7 +20,7 @@ export default {
         return new methodPost('/user/updateUser', params)
     },
     uploadHeadImage(params){
-        return new methodPost('/upload/header', params)
+        return new methodPost('/fileUpload/header', params)
     },
     logout(){
         return new methodGet("/logout")

@@ -45,7 +45,12 @@ const routes = [
         path: '/myPaper',
         name: 'MyPaper',
         component: () => import('../views/paper/MyPaper.vue')
-      }
+      },
+      {
+        path: '/modifyInfo',
+        name: 'ModifyInfo',
+        component: () => import('../views/user/ModifyInfo.vue')
+      },
     ]
   },
   {
@@ -53,6 +58,11 @@ const routes = [
     name: 'login',
     component: () => import('../views/Login.vue')
   },
+  {
+    path: '/resetPassword',
+    name: 'ResetPassword',
+    component: () => import('../views/user/ResetPassword.vue')
+  }
 ]
 
 const router = new VueRouter({

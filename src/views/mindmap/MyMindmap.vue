@@ -24,7 +24,12 @@
         <v-btn icon title="重置查询" @click="reset"><v-icon>mdi-backup-restore</v-icon></v-btn>
         <v-btn icon title="新建" @click="addDialog = true"><v-icon>mdi-plus-circle</v-icon></v-btn>
       </v-toolbar>
-      <v-container fluid class="grey lighten-4">
+      <v-container fluid class="grey lighten-4 plane">
+        <v-layout justify-center align-center>
+          <p v-if="themeList.length == 0" class="display-1 text--primary single-text ma-12">
+            暂无数据
+          </p>
+        </v-layout>
         <v-row>
           <v-col cols="12" sm="6" md="4" v-for="item in themeList" :key="item.id">
             <mindmap-card 
@@ -49,7 +54,12 @@
         <v-toolbar-title style="font-size: x-large">回收站</v-toolbar-title>
         <div class="ma-4">总计{{removedPageInfo.total}}个</div>
       </v-toolbar>
-      <v-container fluid class="grey lighten-4">
+      <v-container fluid class="grey lighten-4 plane">
+        <v-layout justify-center align-center>
+          <p v-if="removedList.length == 0" class="display-1 text--primary single-text ma-12">
+            暂无数据
+          </p>
+        </v-layout>
         <v-row>
           <v-col cols="12" sm="6" md="4" v-for="item in removedList" :key="item.id">
             <removed-card
@@ -211,6 +221,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  .plane {
+    min-height: 150px;
+  }
 </style>

@@ -7,6 +7,7 @@
       <v-toolbar-title>论文脑图工具</v-toolbar-title>
     </v-app-bar>
     <register-dialog
+      v-if="registerDialog"
       :dialog="registerDialog"
       @on-change-dialog="changRegisterDialog"
     ></register-dialog>
