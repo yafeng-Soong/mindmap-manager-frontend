@@ -4,7 +4,7 @@ import Vue from 'vue'
 
 
 
-axios.defaults.baseURL = 'http://127.0.0.1:8082'
+axios.defaults.baseURL = '/api'
 axios.defaults.timeout = 10000;
 axios.defaults.withCredentials = true //允许跨域携带cookie
 

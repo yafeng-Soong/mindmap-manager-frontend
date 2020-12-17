@@ -23,6 +23,14 @@
         <v-btn icon title="查找" @click="search"><v-icon>mdi-search-web</v-icon></v-btn>
         <v-btn icon title="重置查询" @click="reset"><v-icon>mdi-backup-restore</v-icon></v-btn>
         <v-btn icon title="新建" @click="addDialog = true"><v-icon>mdi-plus-circle</v-icon></v-btn>
+        <v-progress-linear
+          :active="themeLoading"
+          :indeterminate="themeLoading"
+          absolute
+          bottom
+          height="10"
+          color="amber"
+        ></v-progress-linear>
       </v-toolbar>
       <v-container fluid class="grey lighten-4 plane">
         <v-layout justify-center align-center>
@@ -53,6 +61,14 @@
       <v-toolbar  dark color="red lighten-2">
         <v-toolbar-title style="font-size: x-large">回收站</v-toolbar-title>
         <div class="ma-4">总计{{removedPageInfo.total}}个</div>
+        <v-progress-linear
+          :active="removedLoading"
+          :indeterminate="removedLoading"
+          absolute
+          bottom
+          height="10"
+          color="amber"
+        ></v-progress-linear>
       </v-toolbar>
       <v-container fluid class="grey lighten-4 plane">
         <v-layout justify-center align-center>
@@ -120,7 +136,9 @@ export default {
       isAdd: true,
       queryForm: {},
       themeList: [],
-      removedList: []
+      removedList: [],
+      themeLoading: false,
+      removedLoading: false
     }
   },
   created() {
@@ -147,50 +165,54 @@ export default {
           console.log('网络错误！'+err);
         })
     },
-    getPageList() {
-      let that = this
-      this.themeList = []
+    async getPageList() {
+      this.themeLoading = true
+      // this.themeList = []
       this.queryForm.currentPage = this.pageInfo.currentPage
       this.queryForm.pageSize = this.pageInfo.pageSize
-      themeApi.getPageList(this.queryForm)
-        .then(res => {
-          if (res.code === 200) {
-            that.themeList = res.data.data;
-            that.pageInfo.pages = res.data.pages
-            that.pageInfo.total = res.data.total
-          } else {
+      let param = {
+        currentPage: this.pageInfo.currentPage,
+        pageSize: this.pageInfo.pageSize,
+        name: this.queryForm.name
+
+      }
+      try {
+        let res = await themeApi.getPageList(param)
+        if (res.code === 200) {
+          this.themeList = res.data.data;
+          this.pageInfo.pages = res.data.pages
+          this.pageInfo.total = res.data.total
+        } else {
             this.$toast.error(res.data)
             console.log('获取脑图列表失败'+res.data);
-          }
-        })
-        .catch(err => {
-          this.$toast.error('网络异常')
-          console.log('网络错误！'+err);
-        })
+        }
+      } catch (err) {
+        console.log('网络错误！'+err);
+      }
+      this.themeLoading = false
     },
-    getRemovedPageList() {
-      let that = this
-      this.removedList = []
+    async getRemovedPageList() {
+      this.removedLoading = true
+      // this.removedList = []
       let param = {
         currentPage: this.removedPageInfo.currentPage,
         pageSize: this.removedPageInfo.pageSize,
         removed: true
       }
-      themeApi.getPageList(param)
-        .then(res => {
-          if (res.code === 200) {
-            that.removedList = res.data.data;
-            that.removedPageInfo.pages = res.data.pages
-            that.removedPageInfo.total = res.data.total
-          } else {
-            this.$toast.error(res.data)
-            console.log('获取回收站列表失败'+res.data);
-          }
-        })
-        .catch(err => {
-          this.$toast.error('网络异常')
-          console.log('网络错误！'+err);
-        })
+      try {
+        let res = await themeApi.getPageList(param)
+        if (res.code === 200) {
+          this.removedList = res.data.data;
+          this.removedPageInfo.pages = res.data.pages
+          this.removedPageInfo.total = res.data.total
+        } else {
+          this.$toast.error(res.data)
+          console.log('获取回收站列表失败'+res.data);
+        }
+      } catch (err) {
+        console.log('网络错误！'+err);
+      }
+      this.removedLoading = false
     },
     search() {
       this.pageInfo = Object.assign({}, this.defaultPageInfo)

@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentUser: null,
-    baseUrl:'http://127.0.0.1:8082',
+    baseUrl:'/api',
     themeInfo: null,
     paperInfo: null,
     tagInfo: null

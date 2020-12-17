@@ -18,7 +18,7 @@
     <v-content class="login-wrap">
       <v-container fluid fill-height>
         <v-layout align-center justify-center>
-          <v-flex xs12 sm8 md4>
+          <v-flex xs3 sm4 md4>
             <v-card class="login-panel">
               <v-toolbar dark color="primary">
                 <v-toolbar-title>登录论文脑图工具</v-toolbar-title>
