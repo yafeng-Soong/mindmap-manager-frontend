@@ -15,7 +15,7 @@
                 dense
                 :rules="rules.publishYear"
                 prepend-icon="mdi-calendar-month"
-                label="发表年份">
+                label="发表年份*">
               </v-text-field>
             </v-col>
             <v-col cols="12">
@@ -34,7 +34,7 @@
                     small-chips
                     deletable-chips
                     prepend-icon="mdi-brain"
-                    label="所属脑图"
+                    label="所属脑图*"
                     @change="themeChange">
                   </v-autocomplete>
                 </v-col>
@@ -53,7 +53,7 @@
                     deletable-chips
                     multiple
                     prepend-icon="mdi-tag-multiple-outline"
-                    label="所属节点">
+                    label="所属节点*">
                   </v-autocomplete>
                 </v-col>
               </v-row>
@@ -65,7 +65,7 @@
                 required
                 :rules="rules.notEmpty"
                 prepend-icon="mdi-format-title"
-                label="论文题目">
+                label="论文题目*">
               </v-text-field>
             </v-col>
             <v-col cols="12">
@@ -115,12 +115,22 @@
                 label="点击上传论文附件">
               </v-file-input>
             </v-col>
+            <small>*为必填字段</small>
           </v-container>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-layout justify-center>
-          <v-btn class="ma-4" color="success" @click="submit">上传</v-btn>
+          <!-- <v-btn class="ma-4" color="success" @click="submit">上传</v-btn> -->
+          <progress-button 
+            class="ma-4"
+            color="success"
+            progressColor="success"
+            title="上传"
+            :disabled="loading"
+            :loading="loading"
+            @click="submit">
+          </progress-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -131,11 +141,14 @@
 import paperApi from "@/api/paperApi.js"
 import tagApi from '@/api/tagApi.js'
 import themeApi from '@/api/themeApi.js'
+import ProgressButton from '../../components/common/ProgressButton.vue'
 export default {
   name: 'Submit',
+  components: { ProgressButton },
   data(){
     return {
       file: null,
+      loading: false,
       valid: true,
       themeDisable: false,
       fromNavigation: true, // 是否是从侧边栏跳转过来的
@@ -202,21 +215,23 @@ export default {
   },
   methods: {
     async submit() {
+      if (!this.$refs.form.validate())
+        return
+      this.loading = true
       console.log(this.paperInfo.tags)
-      if (this.$refs.form.validate()) {
-        try {
-          let res = await paperApi.submit(this.paperInfo)
-          if (res.code === 200)
-            this.uploadFile(res.data)
-          else {
-            this.$toast.error(res.data)
-            console.log(res)
-          }  
-        } catch (err) {
-          this.$toast.error('上传论文失败！')
-          console.log(err)
-        } 
-      }
+      try {
+        let res = await paperApi.submit(this.paperInfo)
+        if (res.code === 200)
+          await this.uploadFile(res.data)
+        else {
+          this.$toast.error(res.data)
+          console.log(res)
+        }  
+      } catch (err) {
+        this.$toast.error('上传论文失败！')
+        console.log(err)
+      } 
+      this.loading = false
     },
     uploadFile(paperId) {
       const formData = new FormData()

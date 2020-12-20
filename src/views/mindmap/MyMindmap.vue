@@ -39,8 +39,8 @@
           </p>
         </v-layout>
         <v-row>
-          <v-col cols="12" sm="6" md="4" v-for="item in themeList" :key="item.id">
-            <mindmap-card 
+          <v-col sm="6" md="4" v-for="item in themeList" :key="item.id">
+            <mindmap-card
               :themeInfo="item"
               @changed="getPageList"
               @removed="themeFlash">

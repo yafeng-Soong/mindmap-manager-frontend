@@ -7,8 +7,11 @@ export default {
     register(params) {
         return new methodPost('/user/signUp', params)
     },
-    resetPassword(params) {
-        return new methodPost('/user/resetPassword', params)
+    sendResetEmail(params) {
+        return new methodGet('/user/resetPassword', {email: params})
+    },
+    resetPassword(parmas) {
+        return new methodPost('/user/resetPassword', parmas)
     },
     sayHello(){
         return new methodGet("/sayHello")

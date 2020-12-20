@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-layout justify-center align-center>
     <mindmap-add-dialog 
       v-if="dialog"
       :dialog="dialog"
@@ -7,7 +7,7 @@
       :themeInfo="themeInfo"
       @on-change-dialog="changeDialog">
     </mindmap-add-dialog>
-    <v-card class="ma-1">
+    <v-card class="ma-1" min-width="360" max-width="450">
       <v-card-text>
         <div>于 {{themeInfo.createTime}} 创建</div>
         <p class="display-1 text--primary single-text">
@@ -25,7 +25,7 @@
           color="orange"
           @click="detail"
         >
-          查看详情
+          进入脑图
         </v-btn>
         <v-btn
           text
@@ -42,7 +42,7 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </div>
+  </v-layout>
 </template>
 
 <script>

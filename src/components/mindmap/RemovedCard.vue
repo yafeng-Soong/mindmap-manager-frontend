@@ -18,13 +18,22 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
+          <!-- <v-btn
             color="error"
             text
             @click="remove"
           >
             删除
-          </v-btn>
+          </v-btn  > -->
+          <progress-button
+            :text="true"
+            progressColor="error"
+            color="error"
+            title="删除"
+            :disabled="loading"
+            :loading="loading"
+            @click="remove">
+          </progress-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -60,8 +69,10 @@
 
 <script>
 import themeApi from '@/api/themeApi.js'
+import ProgressButton from '../../components/common/ProgressButton.vue'
 export default {
   name:'RemovedCard',
+  components: { ProgressButton },
   props: {
     themeInfo: {
       types: Object,
@@ -70,7 +81,8 @@ export default {
   },
   data() {
     return {
-      dialog: false
+      dialog: false,
+      loading: false
     }
   },
   methods: {
@@ -88,6 +100,7 @@ export default {
         })
     },
     async remove() {
+      this.loading = true
       try {
         let res = await themeApi.deleteTheme(this.themeInfo.id)
         if (res.code === 200) {
@@ -100,6 +113,7 @@ export default {
         console.log(err)
         this.$toast.error('网络异常')
       }
+      this.loading = false
       this.dialog = false
     }
   }

@@ -1,8 +1,5 @@
 <template>
   <div class="fill-height">
-    <div class="request-loading-component" v-show="loading">
-      <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
-    </div>
     <v-app-bar app color="primary" dark>
       <v-toolbar-title>论文脑图工具</v-toolbar-title>
     </v-app-bar>
@@ -44,7 +41,25 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text :disabled="!resetDisable" @click="resetPassword">重置</v-btn>
+          <!-- <v-btn color="primary" text :disabled="!resetDisable" @click="resetPassword">
+            <v-progress-circular
+              v-show="loading"
+              indeterminate
+              color="primary"
+              size="20"
+              width="2"
+            ></v-progress-circular>
+            <span v-show="!loading">重置</span>
+          </v-btn> -->
+          <progress-button 
+            :text="true"
+            progressColor="blue darken-1"
+            color="blue darken-1"
+            title="重置"
+            :disabled="!resetDisable"
+            :loading="loading"
+            @click="resetPassword">
+          </progress-button>
         </v-card-actions>
       </v-card>
     </v-layout>
@@ -53,12 +68,16 @@
 
 <script>
 import userApi from "@/api/userApi.js"
+import ProgressButton from '../../components/common/ProgressButton.vue'
+
 export default {
   name: 'ResetPassword',
+  components: { ProgressButton },
   data() {
     return {
       showPassword: false,
       password: null,
+      loading: false,
       confirmPassword: null,
       token: null,
       registerInfo: {
@@ -87,24 +106,29 @@ export default {
     resetDisable() {
       let password = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test(this.password)
       let confirm = (this.password === this.confirmPassword)
-      return password && confirm
+      let sending = !this.loading
+      return password && confirm && sending
     },
   },
   methods: {
     resetPassword() {
+      let that = this
       let param = {
         token: this.token,
         password: this.password
       }
+      this.loading = true
       userApi.resetPassword(param)
         .then(res => {
           if (res.code === 200) {
-            this.$toast.sucess(res.data)
+            this.$toast.success(res.data)
             this.$router.replace('/login')
-          } else this.$toast.console.error();(res.data)
+          } else this.$toast.error(res.data)
+          that.loading = false
         })
         .catch(err => {
           console.log(err)
+          that.loading = false
         })
     }
   }

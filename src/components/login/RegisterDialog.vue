@@ -51,7 +51,16 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialog_=false">关闭</v-btn>
-          <v-btn color="blue darken-1" text :disabled="!registerDisable" @click="register">注册</v-btn>
+          <!-- <v-btn color="blue darken-1" text :disabled="!registerDisable" @click="register">注册</v-btn> -->
+          <progress-button 
+            :text="true"
+            progressColor="blue darken-1"
+            color="blue darken-1"
+            title="注册"
+            :disabled="!registerDisable"
+            :loading="loading"
+            @click="register">
+          </progress-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -60,7 +69,9 @@
 
 <script>
   import userApi from "@/api/userApi.js"
+  import ProgressButton from '../../components/common/ProgressButton.vue'
   export default {
+    components: { ProgressButton },
     props:{
       dialog: {
         types: Boolean,
@@ -69,6 +80,7 @@
     },
     data() {
       return {
+        loading: false,
         showPassword: false,
         confirmPassword: null,
         registerInfo: {
@@ -106,13 +118,16 @@
         let email = /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(this.registerInfo.email)
         let password = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test(this.registerInfo.password)
         let confirm = (this.registerInfo.password === this.confirmPassword)
-        return email && password && confirm
+        return email && password && confirm && !this.loading
       }
     },
     methods: {
       register() {
+        let that = this
+        this.loading = true
         userApi.register(this.registerInfo)
           .then(res => {
+            that.loading = false
             if (res.code === 200){
               this.dialog_ = false
               this.$toast.success(res.data)
@@ -122,6 +137,7 @@
           })
           .catch(err => {
             console.log(err)
+            that.loading = false
           })
       },
     }

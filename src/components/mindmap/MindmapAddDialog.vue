@@ -7,7 +7,7 @@
       <v-card-text>
         <v-text-field 
           v-model="addVo.name"
-          label="脑图名称" 
+          :label="isAdd?'脑图名称*':'脑图名称'" 
           name="name"
           prepend-icon="mdi-format-title"
           required
@@ -31,11 +31,22 @@
           :rules="rules"
           label="点击上传xmind附件">
         </v-file-input>
+        <small v-if="isAdd">*为必填字段</small>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="dialog_=false">关闭</v-btn>
-        <v-btn v-if="isAdd" color="blue darken-1" text :disabled="!addDisable" @click="add">新建</v-btn>
+        <!-- <v-btn v-if="isAdd" color="blue darken-1" text :disabled="!addDisable" @click="add">新建</v-btn> -->
+        <progress-button 
+          v-if="isAdd"
+          :text="true"
+          progressColor="blue darken-1"
+          color="blue darken-1"
+          title="新建"
+          :disabled="!addDisable"
+          :loading="loading"
+          @click="add">
+        </progress-button>
         <v-btn v-if="!isAdd" color="blue darken-1" text :disabled="!updateAble" @click="update">更新</v-btn>
       </v-card-actions>
     </v-card>
@@ -44,8 +55,10 @@
 
 <script>
 import themeApi from '@/api/themeApi.js'
+import ProgressButton from '../../components/common/ProgressButton.vue'
 export default {
   name: 'MindmapAddDialog',
+  components: { ProgressButton },
   props:{
     dialog: {
       types: Boolean,
@@ -62,6 +75,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       nameRules: [
         v => !!v || '必须输入邮箱字段',
         v => v.length <= 30 || '不能超过30个字符'
@@ -99,7 +113,7 @@ export default {
     addDisable() {
       let v = this.addVo.name
       let f = this.file
-      return !!v && v.length <= 30 && (!!f && f.size/1024/1024<15 || f == null)
+      return !!v && v.length <= 30 && (!!f && f.size/1024/1024<15 || f == null) && !this.loading
     },
     updateAble() {
       let name = this.addVo.name
@@ -109,9 +123,12 @@ export default {
   },
   methods: {
     add() {
+      let that = this
+      this.loading = true
       if (this.file == null)
         themeApi.addTheme(this.addVo)
           .then(res => {
+            that.loading = false
             if (res.code === 200) {
               this.$toast.success('新增成功')
               this.dialog_ = false
@@ -120,6 +137,7 @@ export default {
           .catch(err => {
             console.log(err)
             this.$toast.error('网络异常')
+            that.loading = false
           })
       else {
         const formData = new FormData()
@@ -128,6 +146,7 @@ export default {
         formData.append('description', this.addVo.description)
         themeApi.addByXmind(formData)
           .then(res => {
+            that.loading = false
             if (res.code === 200) {
               this.$toast.success('导入xmind成功')
               this.dialog_ = false
@@ -136,6 +155,7 @@ export default {
           .catch(err => {
             console.log(err)
             this.$toast.error('网络异常')
+            that.loading = false
           })
       }
     },

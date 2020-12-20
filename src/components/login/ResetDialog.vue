@@ -18,7 +18,16 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialog_=false">关闭</v-btn>
-          <v-btn color="blue darken-1" text :disabled="!resetDisable" @click="reset">发送邮件</v-btn>
+          <!-- <v-btn color="blue darken-1" text :disabled="!resetDisable" @click="reset">发送邮件</v-btn> -->
+          <progress-button 
+            :text="true"
+            progressColor="blue darken-1"
+            color="blue darken-1"
+            title="发送邮件"
+            :disabled="!resetDisable"
+            :loading="loading"
+            @click="reset">
+          </progress-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -26,7 +35,9 @@
 
 <script>
 import userApi from '@/api/userApi.js'
+import ProgressButton from '../../components/common/ProgressButton.vue'
 export default {
+    components: { ProgressButton },
     props:{
       dialog: {
         types: Boolean,
@@ -35,12 +46,13 @@ export default {
     },
     data() {
       return {
+        loading: false,
         email: null,
-          emailRules: [
-            v => !!v || '必须输入邮箱字段',
-            v => /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(v) || '请输入正确格式的邮箱'
-          ],
-        }
+        emailRules: [
+          v => !!v || '必须输入邮箱字段',
+          v => /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(v) || '请输入正确格式的邮箱'
+        ],
+      }
     },
     computed: {
       dialog_: {
@@ -53,13 +65,17 @@ export default {
         }
       },
       resetDisable() {
-        return /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(this.email)
+        let email = /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(this.email)
+        return email && !this.loading
       }
     },
     methods: {
       reset(){
-        userApi.resetPassword(this.email)
+        let that = this
+        this.loading = true
+        userApi.sendResetEmail(this.email)
           .then(res => {
+            that.loading = false
             if (res.code === 200){
               this.$toast.success(res.data)
               this.dialog_ = false
@@ -67,6 +83,7 @@ export default {
           })
           .catch(err => {
             console.log(err)
+            that.loading = false
         })
       }
     }

@@ -64,7 +64,10 @@ export default {
     logout(){
       userApi.logout()
         .then(res =>{
-          this.$toast.success(res)
+          if (res.code === 200)
+            this.$toast.success(res.data)
+          else
+            this.$toast.error(res.data)
           this.$store.commit('SET_CURRENT_USER', null)
           this.$router.replace("/")
         })
