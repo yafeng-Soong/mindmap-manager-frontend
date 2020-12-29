@@ -7,7 +7,7 @@
       :themeInfo="themeInfo"
       @on-change-dialog="changeDialog">
     </mindmap-add-dialog>
-    <v-card class="ma-1" min-width="360" max-width="450">
+    <v-card class="ma-1" min-width="320" max-width="450">
       <v-card-text>
         <div>于 {{themeInfo.createTime}} 创建</div>
         <p class="display-1 text--primary single-text">

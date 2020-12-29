@@ -77,7 +77,7 @@
           </p>
         </v-layout>
         <v-row>
-          <v-col cols="12" sm="6" md="4" v-for="item in removedList" :key="item.id">
+          <v-col sm="6" md="4" v-for="item in removedList" :key="item.id">
             <removed-card
               :themeInfo="item"
               @recovered="themeFlash"

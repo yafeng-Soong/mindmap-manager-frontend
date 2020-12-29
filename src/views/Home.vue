@@ -97,6 +97,17 @@ export default {
       }
     }
   },
+  // async created() {
+  //   try {
+  //     let res = await userApi.isLogin()
+  //     if (res.code === 200)
+  //       this.$store.commit('SET_CURRENT_USER', res.data)
+  //     else
+  //       this.$router.replace('/login');
+  //   } catch (err) {
+  //     this.$router.replace('/login');
+  //   }
+  // },
   methods:{
     reload(){
       this.isRouterAlive = false

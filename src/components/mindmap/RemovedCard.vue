@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-layout justify-center align-center>
     <v-dialog
       v-model="dialog"
       width="500">
@@ -37,7 +37,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-card class="ma-1">
+    <v-card class="ma-1" min-width="360" max-width="450">
       <v-card-text>
         <div>于 {{themeInfo.updateTime}} 删除</div>
         <p class="display-1 text--primary single-text">
@@ -64,7 +64,7 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </div>
+  </v-layout>
 </template>
 
 <script>
