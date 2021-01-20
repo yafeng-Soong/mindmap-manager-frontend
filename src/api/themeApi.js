@@ -37,4 +37,19 @@ export default {
   getRemoveList(param) {
     return new methodPost("/theme/getRemovedTagList", param)
   },
+  getMembers(param) {
+    return new methodGet('/theme/getMembers', {themeId: param})
+  },
+  getInvitedList(param) {
+    return new methodPost('/theme/getInvitedList', param)
+  },
+  inviteMember(param) {
+    return new methodPost('/theme/invite', param)
+  },
+  exitTheme(param) {
+    return new methodGet('/theme/exit', {themeId: param})
+  },
+  kickOff(param) {
+    return new methodPost('/theme/kickOff', param)
+  }
 }

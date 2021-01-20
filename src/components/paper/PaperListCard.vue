@@ -1,13 +1,47 @@
 <template>
   <v-layout align-center justify-center>
     <v-flex xs8 sm8 md8> 
+      <v-dialog v-model="updateDialog" persistent max-width="500">
+        <v-card>
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title>重命名结点</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <tip-icon
+            tip="关闭"
+            icon="mdi-close"
+            @click="updateDialog = false">
+            </tip-icon>
+          </v-toolbar>
+          <v-card-text>
+            <v-text-field class="ma-4"
+              v-model="name"
+              label="结点名称" 
+              name="name"
+              prepend-icon="mdi-format-title"
+              required
+              hint="请输入新的结点名称"
+              type="text"
+              :rules="nameRule"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <progress-button
+              :text="true"
+              title="更新"
+              :disabled="updateDisable"
+              :loading="loading"
+              @click="updateName">
+            </progress-button>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-dialog v-model="dialog_" persistent max-width="800px">
         <v-card>
           <v-toolbar>
             <v-toolbar-title>{{tagInfo.name}} 相关文章</v-toolbar-title>
             <p class="ma-4" style="min-width:80px">总计{{pageInfo.total}}篇</p>
             <v-spacer></v-spacer>
-            <v-btn color="warning">锁定</v-btn>
+            <v-btn color="warning" @click="updateDialog = true">重命名</v-btn>
             <v-btn class="ma-4" color="success" @click="submitPaper">新增</v-btn>
             <v-btn color="primary" @click="dialog_=false">关闭</v-btn>
           </v-toolbar>
@@ -60,8 +94,15 @@
 <script>
 import Pagination from '@/components/common/Pagination.vue'
 import paperApi from '@/api/paperApi.js'
+import TipIcon from "../common/TipIcon"
+import ProgressButton from '../../components/common/ProgressButton.vue'
+import tagApi from '@/api/tagApi.js'
 export default {
-    components: {Pagination},
+    components: {
+      Pagination,
+      TipIcon,
+      ProgressButton,
+    },
     name: 'PaperListCard',
     props:{
       dialog: {
@@ -79,6 +120,9 @@ export default {
     },
     data() {
       return {
+        updateDialog: false,
+        name: this.tagInfo.name,
+        loading: false,
         pageInfo: {
           currentPage: 1,
           pageSize: 5,
@@ -93,6 +137,10 @@ export default {
           {text: '作者', value: 'author', sortable: false},
           {text: '关键字', value: 'keyword', sortable: false},
           {text: '发表年份', value: 'publishYear', sortable: false, width: '100px'}
+        ],
+        nameRule: [
+          v => !!v || '不能为空',
+          v => v.length < 30 || '名称过长'
         ]
       }
     },
@@ -106,6 +154,9 @@ export default {
           this.$emit("on-change-dialog", val);
         }
       },
+      updateDisable() {
+        return this.loading || !this.name || this.name.length > 30
+      }
     },
     created() {
       this.getPaperList()
@@ -133,6 +184,28 @@ export default {
             this.$toast.error('网络异常')
             console.log('网络异常' + err)
           })
+      },
+      async updateName() {
+        this.loading = true
+        let param = {
+          tagId: this.tagInfo.tagId,
+          name: this.name
+        }
+        try {
+          let res = await tagApi.renameTag(param)
+          if (res.code === 200)
+            this.$toast.success('重命名成功')
+          else 
+            this.$toast.error(res.data)
+        } catch (err) {
+          console.log(err)
+          this.$toast.error('服务器异常')
+        }
+        this.loading = false
+        this.updateDialog = false
+        this.dialog_ = false
+        // 通知父组件更新tagTree
+        this.$emit('get-tag-list')
       },
       submitPaper() {
         this.$store.commit('setTagInfo', this.tagInfo)

@@ -58,6 +58,35 @@
     </v-card>
     <div class="ma-8"></div>
     <v-card flat tile>
+      <v-toolbar  dark color="orange lighten-1">
+        <v-toolbar-title style="font-size: x-large">团队脑图</v-toolbar-title>
+        <div class="ma-4">总计{{invitedPageInfo.total}}个</div>
+      </v-toolbar>
+      <v-container fluid class="grey lighten-4 plane">
+        <v-layout justify-center align-center>
+          <p v-if="invitedList.length == 0" class="display-1 text--primary single-text ma-12">
+            暂无数据
+          </p>
+        </v-layout>
+        <v-row>
+          <v-col sm="6" md="4" v-for="item in invitedList" :key="item.id">
+            <group-card 
+              :themeInfo="item"
+              @exited="getInvitedList" >
+            </group-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-card-actions class="grey lighten-4">
+        <v-layout justify-center>
+          <pagination theme="orange lighten-1"
+          :currentPage="invitedPageInfo.currentPage"
+          :total="invitedPageInfo.pages" @on-change-page="changeInvitedPage"></pagination>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
+    <div class="ma-8"></div>
+    <v-card flat tile>
       <v-toolbar  dark color="red lighten-2">
         <v-toolbar-title style="font-size: x-large">回收站</v-toolbar-title>
         <div class="ma-4">总计{{removedPageInfo.total}}个</div>
@@ -103,6 +132,7 @@ import MindmapAddDialog from '@/components/mindmap/MindmapAddDialog.vue'
 import MindmapCard from '@/components/mindmap/MindmapCard.vue'
 import themeApi from '@/api/themeApi.js'
 import RemovedCard from '../../components/mindmap/RemovedCard.vue'
+import GroupCard from '../../components/mindmap/GroupCard.vue'
 export default {
   name: 'MyMindmap',
   components: {
@@ -110,6 +140,7 @@ export default {
     MindmapAddDialog,
     MindmapCard,
     RemovedCard,
+    GroupCard,
   },
   data(){
     return {
@@ -132,11 +163,18 @@ export default {
         total: 0,
         pages: 1
       },
+      invitedPageInfo: {
+        currentPage: 1,
+        pageSize: 3,
+        total: 0,
+        pages: 1
+      },
       themeInfo: null,
       isAdd: true,
       queryForm: {},
       themeList: [],
       removedList: [],
+      invitedList: [],
       themeLoading: false,
       removedLoading: false
     }
@@ -144,6 +182,7 @@ export default {
   created() {
     this.getPageList()
     this.getRemovedPageList()
+    this.getInvitedList()
   },
   computed: {
   },
@@ -214,6 +253,22 @@ export default {
       }
       this.removedLoading = false
     },
+    async getInvitedList() {
+      let param = {
+        currentPage: this.removedPageInfo.currentPage,
+        pageSize: this.removedPageInfo.pageSize,
+      }
+      try {
+        let res = await themeApi.getInvitedList(param)
+        if (res.code === 200) {
+          this.invitedList = res.data.data
+          this.invitedPageInfo.pages = res.data.pages
+          this.invitedPageInfo.total = res.data.total
+        } else console.log('获取团队列表失败：'+res.data);
+      } catch (err) {
+        console.log('网络错误！'+err);
+      }
+    },
     search() {
       this.pageInfo = Object.assign({}, this.defaultPageInfo)
       this.getPageList()
@@ -234,6 +289,10 @@ export default {
     changeRemovedPage(val) {
       this.removedPageInfo.currentPage = val
       this.getRemovedPageList()
+    },
+    changeInvitedPage(val) {
+      this.invitedPageInfo.currentPage = val;
+      this.getInvitedList()
     },
     themeFlash() {
       this.getPageList()

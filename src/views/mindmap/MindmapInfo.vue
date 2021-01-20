@@ -4,7 +4,8 @@
       v-if="detailDialog"
       :dialog="detailDialog" 
       :tagInfo="tagInfo"
-      @on-change-dialog="changeDialog">
+      @on-change-dialog="changeDialog"
+      @get-tag-list="getTagList">
     </paper-list-card>
     <combine-dialog 
       v-if="combineDialog"
@@ -14,15 +15,20 @@
     </combine-dialog>
     <v-card class="fill-height" width="100%" flat tile>
       <right-navigation 
-        v-if="drawer"
         :drawer="drawer" 
         @on-change-drawer="changeDrawer"
         @recover-tag="getTagList">
       </right-navigation>
       <v-toolbar dense dark color="primary">
+        <tip-icon
+          icon="mdi-keyboard-backspace"
+          tip="返回"
+          @click="backspace">
+        </tip-icon>
         <v-toolbar-title style="font-size: x-large">{{themeInfo.name}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <tip-icon
+          v-if="combineAble"
           icon="mdi-vector-combine"
           tip="合并到..."
           @click="combineDialog=true">
@@ -78,6 +84,11 @@ export default {
   },
   mounted() {
     this.getTagList()
+  },
+  computed: {
+    combineAble() {
+      return this.themeInfo.creator === this.$store.getters.getCurrentUser.username
+    }
   },
   methods: {
     getTagList() {
@@ -259,6 +270,9 @@ export default {
     },
     changeDrawer(val) {
       this.drawer = val
+    },
+    backspace() {
+      this.$router.go(-1)
     }
   }
   

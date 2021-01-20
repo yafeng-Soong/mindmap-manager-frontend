@@ -8,6 +8,12 @@
           <v-card-title>
             确定要彻底删除？
           </v-card-title>
+          <v-divider></v-divider>
+          <tip-icon
+           tip="关闭"
+           icon="mdi-close"
+           @click="dialog = false">
+          </tip-icon>
         </v-toolbar>
         <v-card-text class="display-1 text--primary">
           彻底删除后无法找回，并且与节点相关的论文数据也会被删除，请谨慎操作
@@ -15,11 +21,91 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
+          <progress-button
+            :text="true"
+            progressColor="error"
             color="error"
-            text
-            @click="deleteTag"
-          >删除</v-btn>
+            title="删除"
+            :disabled="loading"
+            :loading="loading"
+            @click="deleteTag">
+          </progress-button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      persistent
+      v-model="inviteDialog"
+      width="500">
+      <v-card>
+        <v-toolbar dark color="orange lighten-1">
+          <v-card-title>
+            请输入成员的邮箱
+          </v-card-title>
+          <v-spacer></v-spacer>
+          <tip-icon
+           tip="关闭"
+           icon="mdi-close"
+           @click="inviteDialog = false">
+          </tip-icon>
+        </v-toolbar>
+        <v-card-text>
+          <v-text-field class="ma-4"
+            v-model="email"
+            label="成员邮箱" 
+            name="email"
+            prepend-icon="mdi-email"
+            required
+            hint="请输入要邀请的邮箱"
+            type="text"
+            :rules="emailRules"></v-text-field>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <progress-button
+            :text="true"
+            progressColor="orange lighten-1"
+            color="orange lighten-1"
+            title="邀请"
+            :disabled="!inviteDisable"
+            :loading="loading"
+            @click="inviteMember">
+          </progress-button>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      persistent
+      v-model="kickDialog"
+      width="500">
+      <v-card>
+        <v-toolbar dark color="red lighten-2">
+          <v-card-title>
+            确定要踢出该成员？
+          </v-card-title>
+          <v-divider></v-divider>
+          <tip-icon
+           tip="关闭"
+           icon="mdi-close"
+           @click="kickDialog = false">
+          </tip-icon>
+        </v-toolbar>
+        <v-card-text class="display-1 text--primary">
+          该成员创建的结点及操作将得到保留，可以重新邀请该成员
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <progress-button
+            :text="true"
+            progressColor="error"
+            color="error"
+            title="踢出"
+            :disabled="loading"
+            :loading="loading"
+            @click="kickOut">
+          </progress-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -53,38 +139,47 @@
           <v-list three-line>
               <v-list-item>
                 <v-list-item-avatar>
-                      <v-img :src="creator.avatar"></v-img>
+                      <v-img :src="headImgUrl(creator.avatar)"></v-img>
                   </v-list-item-avatar>
                   <v-list-item-content>
-                      <v-list-item-title>{{userInfo.username}}    (创建者)</v-list-item-title>
-                      <v-list-item-subtitle>{{userInfo.email}}</v-list-item-subtitle>
+                      <v-list-item-title>{{creator.username}}    (创建者)</v-list-item-title>
+                      <v-list-item-subtitle>{{creator.email}}</v-list-item-subtitle>
                   </v-list-item-content>  
               </v-list-item>
               <v-divider></v-divider>
-              <v-list-item v-for="(item, index) in items"
+              <v-list-item v-for="(item, index) in members"
                   :key="index"
                   >
-                  <v-list-item-avatar color="primary" size="30">
-                      <!-- <v-img :src="item.avatar"></v-img> -->
-                      <span class="white--text headline">{{item.title[0]}}</span>
+                  <v-list-item-avatar size="30">
+                      <v-img :src="headImgUrl(item.avatar)"></v-img>
+                      <!-- <span class="white--text headline">{{members.avatar}}</span> -->
                   </v-list-item-avatar>
                   <v-list-item-content>
-                      <v-list-item-title v-html="item.title"></v-list-item-title>
-                      <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                      <v-list-item-title v-html="item.username"></v-list-item-title>
+                      <v-list-item-subtitle v-html="item.email"></v-list-item-subtitle>
                   </v-list-item-content>
+                  <v-list-item-action v-if="kickAble">
+                    <tip-icon
+                      color="error"
+                      tip="踢出"
+                      icon="mdi-account-remove"
+                      @click="showKick(item.id)">
+                    </tip-icon>
+                  </v-list-item-action>
               </v-list-item>
               <v-divider></v-divider>
           </v-list>
           <v-layout justify-center align-center>
-            <v-btn text color="warning">邀请成员</v-btn>
+            <v-btn text color="warning" @click="inviteDialog = true">邀请成员</v-btn>
           </v-layout>
         </v-tab-item>
         <v-tab-item>
           <v-list three-line>
             <v-list-item v-for="(item, index) in operations" 
             :key="index">
-              <v-list-item-avatar color="primary">
-                <span class="white--text headline">{{item.operatorName[0]}}</span>
+              <v-list-item-avatar>
+                <v-img :src="headImgUrl(item.avatar)"></v-img>
+                <!-- <span class="white--text headline">{{item.operatorName[0]}}</span> -->
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>
@@ -111,8 +206,8 @@
             <v-list-item 
               v-for="(item, index) in removedList"
               :key="index">
-              <v-list-item-avatar color="primary">
-                <span class="white--text headline">宋</span>
+              <v-list-item-avatar>
+                <v-img :src="headImgUrl(item.avatar)"></v-img>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>
@@ -158,11 +253,13 @@ import tagApi from '@/api/tagApi.js'
 import themeApi from '@/api/themeApi.js'
 import TipIcon from "../common/TipIcon"
 import Pagination from '@/components/common/Pagination.vue'
+import ProgressButton from '../../components/common/ProgressButton.vue'
 export default {
   name: 'RightNavigation',
   components: {
     TipIcon,
-    Pagination
+    Pagination,
+    ProgressButton,
   },
   props: {
     drawer: {
@@ -177,9 +274,18 @@ export default {
       userInfo: this.$store.getters.getCurrentUser,
       tab: null,
       dialog: false,
+      inviteDialog: false,
+      kickDialog: false,
+      kcikUserId: null,
       deleteTagId: null,
       removedList: [],
       operations: [],
+      loading: false,
+      email: null,
+      emailRules: [
+        v => !!v || '必须输入邮箱字段',
+        v => /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(v) || '请输入正确格式的邮箱'
+      ],
       operationPage: {
         currentPage: 1,
         pageSize: 5,
@@ -192,28 +298,8 @@ export default {
         total: 0,
         pages: 1
       },
-      creator: {
-        avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-        title: '兰威',
-        subtitle: `<span class="text--primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-      },
-      items: [
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-          title: '兰威',
-          subtitle: `<span class="text--primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-        },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: '曹长巍',
-          subtitle: `<span class="text--primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-        },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: '任建',
-          subtitle: '<span class="text--primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-        },
-      ],
+      creator: null,
+      members: [],
     }
   },
   computed: {
@@ -225,12 +311,33 @@ export default {
         //drawer_改变由父组件控制
         this.$emit("on-change-drawer", val);
       }
+    },
+    headImgUrl() {
+      return (path) => this.$store.getters.getBaseUrl + path
+    },
+    inviteDisable() {
+      let email = /^\w+([.-]?\w+)*@\w+([.-]\w+)*(\.\w{2,3})+$/.test(this.email)
+      return email && !this.loading
+    },
+    kickAble() {
+      return this.creator.id === this.$store.getters.getCurrentUser.id
     }
   },
-  mounted() {
-    this.getRemoveList()
-    this.getRecentOperations()
+  watch: {
+    // 监视drawer，如果打开就加载相应列表
+    drawer(val) {
+      if (val) {
+        this.getRemoveList()
+        this.getRecentOperations()
+        this.getMembers()
+      }
+    }
   },
+  // mounted() {
+  //   this.getRemoveList()
+  //   this.getRecentOperations()
+  //   this.getMembers()
+  // },
   methods: {
     getRemoveList() {
       let that = this
@@ -272,9 +379,60 @@ export default {
           console.log(err)
         })
     },
+    async getMembers() {
+      try {
+        let themeId = this.themeInfo.id
+        let res = await themeApi.getMembers(themeId)
+        if (res.code === 200) {
+          this.creator = res.data.creator
+          this.members = res.data.members
+        } else console.log('获取脑图成员失败：' + res.data)
+      } catch (err) {
+        console.log(err)
+      }
+    },
     deleteDialog(tagId) {
       this.deleteTagId = tagId
       this.dialog = true
+    },
+    showKick(userId) {
+      this.kcikUserId = userId
+      this.kickDialog = true
+    },
+    async inviteMember() {
+      this.loading = true
+      let param = {
+        themeId: this.themeInfo.id,
+        email: this.email
+      }
+      try {
+        let res = await themeApi.inviteMember(param)
+        if (res.code === 200) {
+          this.$toast.success(res.data)
+          this.inviteDialog = false
+        } else this.$toast.error(res.data)
+      } catch (err) {
+        console.log(err)
+        this.$toast.error('网络异常~')
+      }
+      this.loading = false
+    },
+    async kickOut() {
+      this.loading = true
+      let param = {
+        themeId: this.themeInfo.id,
+        userId: this.kcikUserId
+      }
+      try {
+        let res = await themeApi.kickOff(param)
+        if (res.code === 200)
+          this.$toast.success(res.data)
+        else this.$toast.error(res.data)
+      } catch (err) {
+        console.log(err)
+      }
+      this.loading = false
+      this.kickDialog = false
     },
     async recoverTag(tagId) {
       try {
@@ -291,6 +449,7 @@ export default {
       this.$emit('recover-tag')
     },
     async deleteTag() {
+      this.loading = true
       try {
         let res = await tagApi.deleteTag(this.deleteTagId)
         if (res.code === 200) {
@@ -304,6 +463,7 @@ export default {
         this.$toast.error('网络异常')
         console.log(err)
       }
+      this.loading = false
       this.dialog = false
     },
     changeOperationPage(val) {
