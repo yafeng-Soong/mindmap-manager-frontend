@@ -55,7 +55,7 @@ export default {
         {title: '论文列表', icon: 'mdi-book-open', url: '/myPaper'},
         {title: '上传论文', icon: 'mdi-file-upload', url: '/submit'},
         {title: '个人信息', icon: 'mdi-contacts', url: '/modifyInfo'},
-        // {title: '更多功能', icon: 'mdi-power', url: '/test'}
+        {title: '更多功能', icon: 'mdi-power', url: '/test'}
       ],
       userInfo: this.$store.getters.getCurrentUser
     }
@@ -69,6 +69,7 @@ export default {
           else
             this.$toast.error(res.data)
           this.$store.commit('SET_CURRENT_USER', null)
+          this.$store.commit('setToken', null)
           this.$router.replace("/")
         })
         .catch(err =>{

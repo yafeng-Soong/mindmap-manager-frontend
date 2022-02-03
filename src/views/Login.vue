@@ -151,7 +151,8 @@
           let res = await userApi.login(param)
           if (res.code === 200) {
             this.$toast.success("登录成功！")
-            this.$store.commit('SET_CURRENT_USER', res.data)
+            this.$store.commit('SET_CURRENT_USER', res.data.userInfo)
+            this.$store.commit('setToken', res.data.token)
             this.$router.replace('/home');
           } else this.$toast.error(res.data)
         } catch (err) {

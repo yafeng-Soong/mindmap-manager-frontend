@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentUser: null,
+    token: null,
     baseUrl:'/api',
     themeInfo: null,
     paperInfo: null,
@@ -16,6 +17,10 @@ export default new Vuex.Store({
       //刷新后state中的数据就没有了，所以对于当前用户数据来说可以考虑存到session中
       sessionStorage.setItem("currentUser",JSON.stringify(payload))
       state.currentUser = payload
+    },
+    setToken: (state, payload) => {
+      sessionStorage.setItem('tokenString', JSON.stringify(payload))
+      state.token = payload
     },
     setThemeInfo: (state, payload) => {
       sessionStorage.setItem("themeInfo",JSON.stringify(payload))
@@ -47,6 +52,11 @@ export default new Vuex.Store({
       if (!state.currentUser)
         state.currentUser = JSON.parse(sessionStorage.getItem("currentUser"))
       return state.currentUser
+    },
+    getToken: (state) => {
+      if (!state.token)
+        state.token = JSON.parse(sessionStorage.getItem("tokenString"))
+      return state.token
     },
     getBaseUrl: state => state.baseUrl,
     getThemeInfo: (state) => {

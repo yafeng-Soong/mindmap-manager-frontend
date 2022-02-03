@@ -12,7 +12,10 @@ router.beforeEach((to, from, next) => {
   if (to.path === '/login' || to.path === '/resetPassword')
     next()
   else {
-    if (store.getters.getCurrentUser == null) {
+    // if (store.getters.getCurrentUser == null) {
+    //   next('/login')
+    // } else next()
+    if (store.getters.getToken == null) {
       next('/login')
     } else next()
   }

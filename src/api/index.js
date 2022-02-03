@@ -1,6 +1,7 @@
 import axios from 'axios'
 import router from '../router/index'
 import Vue from 'vue'
+import store from "../store";
 
 
 
@@ -12,6 +13,12 @@ axios.interceptors.response.use(
     res =>{
         if (res.data.code === 401)
             router.replace("/login")
+        // console.log(res.headers["newtoken"])
+        if (res.headers["newtoken"]) {
+            // 若有newtoken则刷新token
+            store.commit("setToken", res.headers["newtoken"])
+            console.log('token refresh~~~')
+        }
         return res
     },
     err =>{
@@ -24,6 +31,18 @@ axios.interceptors.response.use(
         }
         return Promise.reject(err)
     })
+
+axios.interceptors.request.use(
+    config => {
+        let token = store.getters.getToken
+        if (token)
+            config.headers.Authorization = token
+        return config
+    },
+    error => {
+        return Promise.reject(error)
+    }
+)
 
 export function methodGet(url,params) {
     return new Promise((resolve,reject) => {
